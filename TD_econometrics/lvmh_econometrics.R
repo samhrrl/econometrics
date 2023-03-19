@@ -29,6 +29,24 @@ suppressWarnings(df_lvmh$Volume <- as.numeric(df_lvmh$Volume))
 
 str(df_lvmh)
 
+View(df_lvmh)
+
+length(df_lvmh$Close)
+##ajout d'une nouvelle colonne
+
+df_lvmh$rendementsV2 <- 0
+View(df_lvmh)
+
+
+##Xt+1/xt de la valeur des rendements à la fermeture
+
+for(x in 1:5959){
+  df_lvmh$rendementsV2[x] = (df_lvmh$Close[x+1]/df_lvmh$Close[x])-1
+}
+
+View(df_lvmh)
+
+View(df_lvmh)
 ##on constate bien que le format est correct, on va pouvoir opérer sur nos variables de notre dataframe
 ## et créer une nouvelle colonne rendement
 
@@ -161,9 +179,9 @@ View(df_lvmh_diff_open)
 
 
 ##test de shapiro
-length(df_lvmh_diff)
+length(df_lvmh$rendementsV2)
 
-n_open<- df_lvmh_diff_open[1:5000]
+n_open<- df_lvmh$rendementsV2[1:5000]
 shapiro.test(n_open)
 
 ## On a à disposition deux hypothèses: h0 la loi suit une loi normale et h1 la distribution ne suit pas la loi normale
@@ -171,16 +189,15 @@ shapiro.test(n_open)
 ##la p-value n'est pas siginificative au seuil des 5%. Ainsi, j'en conclus que la distribution ne suit pas une loi normale
 
 #regardons si la corrélation entre les rendements sont 
-res <- cor.test(df_lvmh_diff_open^2,df_lvmh_diff_open^2,
+res <- cor.test(df_lvmh$rendementsV2^2,df_lvmh$rendementsV2^2,
                 method = "kendall")
 res
 ##Graphiquement, on voit que le carré des corrélations est supérieur à 0
 
-acf(df_lvmh_diff_open^2, na.action = na.pass)
+acf(df_lvmh$rendementsV2^2, na.action = na.pass)
 
 ##on peut donc constater ceci graphiquement pour voir que ça ne suit pas une loi normale
 qqnorm(n_open)
 hist(n_open)
 
 ##les résultats sont qualitativement pareils.
-
